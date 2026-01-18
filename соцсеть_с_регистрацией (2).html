@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MiniSocial</title>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f3f4f6;
+      margin: 0;
+    }
+    .center {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      width: 320px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      background: #2563eb;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #1d4ed8;
+    }
+    p.link {
+      text-align: center;
+      cursor: pointer;
+      color: #2563eb;
+    }
+    header {
+      background: #2563eb;
+      color: white;
+      padding: 15px 20px;
+      font-size: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .profile {
+      max-width: 600px;
+      margin: 40px auto;
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    }
+  </style>
+</head>
+<body>
+
+<div id="auth" class="center">
+  <div class="card">
+    <h2 id="title">Регистрация</h2>
+    <input id="email" type="email" placeholder="Email" />
+    <input id="password" type="password" placeholder="Пароль" />
+    <button onclick="submit()">Продолжить</button>
+    <p class="link" onclick="toggle()">У меня уже есть аккаунт</p>
+  </div>
+</div>
+
+<div id="profile" style="display:none;">
+  <header>
+    <div>MiniSocial</div>
+    <button onclick="logout()">Выйти</button>
+  </header>
+
+  <div class="profile">
+    <h2>Профиль</h2>
+    <p><strong>Email:</strong> <span id="userEmail"></span></p>
+    <p><strong>ID:</strong> <span id="userId"></span></p>
+    <p>Это твой личный аккаунт в MiniSocial.</p>
+  </div>
+</div>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyDVsU9T7IMMfyaTUxx94ldcyPlrZ89nUZA",
+    authDomain: "ss61-c04fe.firebaseapp.com",
+    projectId: "ss61-c04fe"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+
+  let isLogin = false;
+
+  function toggle() {
+    isLogin = !isLogin;
+    document.getElementById('title').innerText = isLogin ? 'Вход' : 'Регистрация';
+  }
+
+  function submit() {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    if (isLogin) {
+      auth.signInWithEmailAndPassword(email, password)
+        .catch(err => alert(err.message));
+    } else {
+      auth.createUserWithEmailAndPassword(email, password)
+        .catch(err => alert(err.message));
+    }
+  }
+
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      document.getElementById('auth').style.display = 'none';
+      document.getElementById('profile').style.display = 'block';
+      document.getElementById('userEmail').innerText = user.email;
+      document.getElementById('userId').innerText = user.uid;
+    } else {
+      document.getElementById('auth').style.display = 'flex';
+      document.getElementById('profile').style.display = 'none';
+    }
+  });
+
+  function logout() {
+    auth.signOut();
+  }
+</script>
+
+</body>
+</html>
